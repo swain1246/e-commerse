@@ -1,45 +1,36 @@
-// ProductPage.js
-import React, { useState, useEffect } from 'react';
+// src/pages/ProductPage.js
+import React, { useEffect } from 'react';
 import { FaShoppingCart, FaSignOutAlt } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
-import { useShop } from '../context/ShopContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProducts } from '../redux/productsSlice';
+import { logout } from '../redux/userSlice';
+import { calculateCartTotals } from '../redux/cartSlice';
 import ProductCard from '../components/ProductCard';
 
 const ProductPage = () => {
-  const { currentUser, cartCount, logout } = useShop();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  
+  // Select state from Redux store
+  const { currentUser } = useSelector((state) => state.user);
+  const { cart, cartCount, totalPrice, isInitialized } = useSelector((state) => state.cart);
+  const { products, loading } = useSelector((state) => state.products);
 
-  // Fetch products
+  // Fetch products when component mounts
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=12');
-        const data = await response.json();
-        
-        // Transform to product format
-        const transformedProducts = data.map(item => ({
-          id: item.id,
-          title: item.title,
-          description: item.body.substring(0, 80) + '...',
-          price: Math.floor(Math.random() * 100) + 10,
-          image: `https://picsum.photos/seed/${item.id}/300/200.jpg`
-        }));
-        
-        setProducts(transformedProducts);
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    dispatch(fetchProducts());
+  }, [dispatch]);
 
-    fetchProducts();
-  }, []);
+  // Recalculate cart totals when component mounts or cart changes
+  useEffect(() => {
+    if (isInitialized) {
+      dispatch(calculateCartTotals());
+    }
+  }, [dispatch, isInitialized, cart]);
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     window.location.href = '/';
   };
 

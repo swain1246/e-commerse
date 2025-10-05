@@ -1,25 +1,34 @@
-// ProductCard.js
+// src/components/ProductCard.js
 import React, { useState, useEffect } from 'react';
 import { FaShoppingCart, FaCheck } from 'react-icons/fa';
-import { useShop } from '../context/ShopContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../redux/cartSlice';
 
 const ProductCard = ({ product }) => {
-  const { addToCart, getProductQuantity } = useShop();
+  const dispatch = useDispatch();
   const [isAdding, setIsAdding] = useState(false);
   const [quantityInCart, setQuantityInCart] = useState(0);
   const [isInCart, setIsInCart] = useState(false);
 
+  // Get cart items from Redux store
+  const cart = useSelector((state) => state.cart.cart);
+
   // Check if product is in cart
   useEffect(() => {
-    const qty = getProductQuantity(product.id);
-    setQuantityInCart(qty);
-    setIsInCart(qty > 0);
-  }, [getProductQuantity, product.id]);
+    const item = cart.find(item => item.id === product.id);
+    if (item) {
+      setQuantityInCart(item.quantity);
+      setIsInCart(true);
+    } else {
+      setQuantityInCart(0);
+      setIsInCart(false);
+    }
+  }, [cart, product.id]);
 
   const handleAddToCart = () => {
     if (!isInCart) {
       setIsAdding(true);
-      addToCart(product);
+      dispatch(addToCart(product));
       
       // Reset after animation
       setTimeout(() => setIsAdding(false), 1000);

@@ -1,11 +1,18 @@
-// CartPage.tsx
+// src/pages/CartPage.js
 import React, { useState } from 'react';
 import { FaPlus, FaMinus, FaTrash, FaArrowLeft, FaTimes, FaCheck } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useShop } from '../context/ShopContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateQuantity, removeFromCart, clearCart } from '../redux/cartSlice';
 
 const CartPage = () => {
-  const { cart, totalPrice, updateQuantity, removeFromCart, clearCart } = useShop();
+  const dispatch = useDispatch();
+  
+  // Select state from Redux store
+  const cart = useSelector((state) => state.cart.cart);
+  const totalPrice = useSelector((state) => state.cart.totalPrice);
+  const isInitialized = useSelector((state) => state.cart.isInitialized);
+  
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
@@ -13,19 +20,19 @@ const CartPage = () => {
   const handleIncrement = (productId) => {
     const item = cart.find(item => item.id === productId);
     if (item) {
-      updateQuantity(productId, item.quantity + 1);
+      dispatch(updateQuantity({ productId, newQuantity: item.quantity + 1 }));
     }
   };
 
   const handleDecrement = (productId) => {
     const item = cart.find(item => item.id === productId);
     if (item && item.quantity > 1) {
-      updateQuantity(productId, item.quantity - 1);
+      dispatch(updateQuantity({ productId, newQuantity: item.quantity - 1 }));
     }
   };
 
   const handleRemoveItem = (productId) => {
-    removeFromCart(productId);
+    dispatch(removeFromCart(productId));
   };
 
   const handleCheckoutClick = () => {
@@ -42,7 +49,7 @@ const CartPage = () => {
       
       // Clear cart after successful order
       setTimeout(() => {
-        clearCart();
+        dispatch(clearCart());
         setShowCheckoutModal(false);
         setOrderSuccess(false);
       }, 2000);
@@ -93,7 +100,7 @@ const CartPage = () => {
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">Shopping Cart</h1>
           <button 
-            onClick={clearCart}
+            onClick={() => dispatch(clearCart())}
             className="text-red-500 hover:text-red-400 flex items-center"
           >
             <FaTrash className="mr-1" />

@@ -1,10 +1,11 @@
+// src/pages/LoginPage.js
 import React, { useState, useEffect } from 'react';
 import { FaShoppingCart, FaUser, FaLock, FaEye, FaEyeSlash, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useShop } from '../context/ShopContext'; // Import the context hook
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../redux/userSlice';
 
 const LoginPage = () => {
-  // Form state
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -13,8 +14,7 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({});
   const [toast, setToast] = useState({ show: false, message: '', type: '' });
   
-  // Use the context
-  const { login } = useShop();
+  const dispatch = useDispatch();
 
   // Auto-hide toast after 3 seconds
   useEffect(() => {
@@ -78,8 +78,8 @@ const LoginPage = () => {
         // Remove password from user object before storing
         const { password: userPassword, ...userWithoutPassword } = user;
         
-        // Update context with user data
-        login(userWithoutPassword);
+        // Update Redux store
+        dispatch(login(userWithoutPassword));
         
         // Show success toast
         setToast({
@@ -90,7 +90,7 @@ const LoginPage = () => {
         
         setIsLoading(false);
         
-        // Redirect to dashboard after 2 seconds
+        // Redirect to product page after 2 seconds
         setTimeout(() => {
           window.location.href = '/product';
         }, 2000);
