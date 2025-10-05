@@ -119,7 +119,7 @@ const CartPage = () => {
               {/* Product Details */}
               <div className="ml-4 flex-grow">
                 <h3 className="text-lg font-medium">{item.title}</h3>
-                <p className="text-gray-400 text-sm">${item.price.toFixed(2)} each</p>
+                <p className="text-gray-400 text-sm">₹{item.price.toFixed(2)} each</p>
               </div>
               
               {/* Quantity Controls */}
@@ -142,7 +142,7 @@ const CartPage = () => {
               {/* Item Total */}
               <div className="w-24 text-right">
                 <span className="text-lg font-medium">
-                  ${(item.price * item.quantity).toFixed(2)}
+                  ₹{(item.price * item.quantity).toFixed(2)}
                 </span>
               </div>
               
@@ -161,7 +161,7 @@ const CartPage = () => {
         <div className="mt-8 bg-gray-800 rounded-lg p-6">
           <div className="flex justify-between items-center mb-6">
             <span className="text-xl">Total:</span>
-            <span className="text-2xl font-bold">${totalPrice.toFixed(2)}</span>
+            <span className="text-2xl font-bold">₹{totalPrice.toFixed(2)}</span>
           </div>
           
           <div className="flex justify-between">
@@ -221,7 +221,7 @@ const CartPage = () => {
                             <span className="text-gray-400 mr-2">{item.quantity}x</span>
                             <span className="truncate max-w-[200px]">{item.title}</span>
                           </div>
-                          <span>${(item.price * item.quantity).toFixed(2)}</span>
+                          <span>₹{(item.price * item.quantity).toFixed(2)}</span>
                         </div>
                       ))}
                     </div>
@@ -230,19 +230,19 @@ const CartPage = () => {
                   <div className="border-t border-gray-700 pt-4">
                     <div className="flex justify-between mb-2">
                       <span className="text-gray-400">Subtotal:</span>
-                      <span>${totalPrice.toFixed(2)}</span>
+                      <span>₹{totalPrice.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between mb-2">
                       <span className="text-gray-400">Shipping:</span>
-                      <span>${shipping.toFixed(2)}</span>
+                      <span>₹{shipping.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between mb-4">
                       <span className="text-gray-400">Tax:</span>
-                      <span>${taxAmount.toFixed(2)}</span>
+                      <span>₹{taxAmount.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between font-bold text-lg pt-2 border-t border-gray-700">
                       <span>Total:</span>
-                      <span>${orderTotal.toFixed(2)}</span>
+                      <span>₹{orderTotal.toFixed(2)}</span>
                     </div>
                   </div>
                   

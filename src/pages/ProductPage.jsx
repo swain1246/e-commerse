@@ -15,7 +15,7 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=8');
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=12');
         const data = await response.json();
         
         // Transform to product format

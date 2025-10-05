@@ -1,15 +1,20 @@
 // ProductCard.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaShoppingCart, FaCheck } from 'react-icons/fa';
 import { useShop } from '../context/ShopContext';
 
 const ProductCard = ({ product }) => {
   const { addToCart, getProductQuantity } = useShop();
   const [isAdding, setIsAdding] = useState(false);
-  
-  // Check if product is already in cart
-  const quantityInCart = getProductQuantity(product.id);
-  const isInCart = quantityInCart > 0;
+  const [quantityInCart, setQuantityInCart] = useState(0);
+  const [isInCart, setIsInCart] = useState(false);
+
+  // Check if product is in cart
+  useEffect(() => {
+    const qty = getProductQuantity(product.id);
+    setQuantityInCart(qty);
+    setIsInCart(qty > 0);
+  }, [getProductQuantity, product.id]);
 
   const handleAddToCart = () => {
     if (!isInCart) {
@@ -32,7 +37,7 @@ const ProductCard = ({ product }) => {
         <h3 className="text-white font-medium mb-2 truncate">{product.title}</h3>
         <p className="text-gray-400 text-sm mb-3 h-12 overflow-hidden">{product.description}</p>
         <div className="flex justify-between items-center">
-          <span className="text-teal-400 font-bold">${product.price.toFixed(2)}</span>
+          <span className="text-teal-400 font-bold">₹{product.price.toFixed(2)}</span>
           <button 
             onClick={handleAddToCart}
             disabled={isInCart}

@@ -23,10 +23,10 @@ export const ShopProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [cartCount, setCartCount] = useState(0);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // Load user and cart from localStorage on mount
   useEffect(() => {
-    console.log("Loading data from localStorage...");
     
     // Load user from localStorage
     const savedUser = localStorage.getItem('currentUser');
@@ -34,7 +34,6 @@ export const ShopProvider = ({ children }) => {
       try {
         setCurrentUser(JSON.parse(savedUser));
         setIsAuthenticated(true);
-        console.log("User loaded from localStorage");
       } catch (error) {
         console.error("Error parsing user data:", error);
       }
@@ -46,16 +45,20 @@ export const ShopProvider = ({ children }) => {
       try {
         const parsedCart = JSON.parse(savedCart);
         setCart(parsedCart);
-        console.log("Cart loaded from localStorage:", parsedCart);
       } catch (error) {
         console.error('Error parsing cart data:', error);
         localStorage.removeItem('shopHubCart');
       }
     }
-  }, []); // Empty dependency array ensures this runs only once on mount
+    
+    // Mark as initialized
+    setIsInitialized(true);
+  }, []);
 
   // Update cart count and total price whenever cart changes
   useEffect(() => {
+    if (!isInitialized) return; // Don't save to localStorage during initial load
+    
     // Calculate cart count
     const count = cart.reduce((total, item) => total + item.quantity, 0);
     setCartCount(count);
@@ -66,15 +69,13 @@ export const ShopProvider = ({ children }) => {
     
     // Save cart to localStorage
     localStorage.setItem('shopHubCart', JSON.stringify(cart));
-    console.log("Cart saved to localStorage:", cart);
-  }, [cart]);
+  }, [cart, isInitialized]);
 
   // Login function
   const login = (userData) => {
     setCurrentUser(userData);
     setIsAuthenticated(true);
     localStorage.setItem('currentUser', JSON.stringify(userData));
-    console.log("User logged in and saved to localStorage");
   };
 
   // Logout function
@@ -82,18 +83,15 @@ export const ShopProvider = ({ children }) => {
     setCurrentUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem('currentUser');
-    console.log("User logged out");
   };
 
   // Add product to cart
   const addToCart = (product) => {
-    console.log("Adding product to cart:", product);
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id);
       
       if (existingItem) {
         // If product already exists in cart, increase quantity
-        console.log("Product already in cart, increasing quantity");
         return prevCart.map(item =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
@@ -101,7 +99,6 @@ export const ShopProvider = ({ children }) => {
         );
       } else {
         // If product is new to cart, add it
-        console.log("Product added to cart for the first time");
         return [...prevCart, { ...product, quantity: 1 }];
       }
     });
@@ -109,13 +106,11 @@ export const ShopProvider = ({ children }) => {
 
   // Remove product from cart
   const removeFromCart = (productId) => {
-    console.log("Removing product from cart:", productId);
     setCart(prevCart => prevCart.filter(item => item.id !== productId));
   };
 
   // Update product quantity in cart
   const updateQuantity = (productId, newQuantity) => {
-    console.log("Updating product quantity:", productId, newQuantity);
     if (newQuantity < 1) {
       removeFromCart(productId);
       return;
@@ -132,7 +127,6 @@ export const ShopProvider = ({ children }) => {
 
   // Clear the entire cart
   const clearCart = () => {
-    console.log("Clearing cart");
     setCart([]);
   };
 
